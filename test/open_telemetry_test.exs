@@ -1,6 +1,8 @@
 defmodule OpenTelemetryTest do
   use ExUnit.Case, async: true
 
+  use OpenTelemetry.Tracer
+
   test "current_span tracks nesting" do
     _ctx1 = OpenTelemetry.start_span("span-1")
     ctx2 = OpenTelemetry.start_span("span-2")
@@ -16,4 +18,13 @@ defmodule OpenTelemetryTest do
     OpenTelemetry.end_span()
     assert ctx1 == OpenTelemetry.current_span_ctx()
   end
+
+  test "macro start_span" do
+    OpenTelemetry.Tracer.start_span "span-1" do
+      OpenTelemetry.Tracer.start_span "span-2" do
+        # test something
+      end
+    end
+  end
+
 end
